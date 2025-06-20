@@ -32,7 +32,7 @@ ecommerce-platform/
 
 | Service          | Responsibility |
 |------------------|----------------|
-| **ser Service**     | Handles user registration, login, and user profile management. |
+| **User Service**     | Handles user registration, login, and user profile management. |
 | **Product Service**  | Manages product creation, update, listing, and availability. |
 | **Order Service**    | Handles order creation and updates product quantities accordingly. |
 | **Invoice Service**  | Generates and stores invoice records based on completed orders. |
