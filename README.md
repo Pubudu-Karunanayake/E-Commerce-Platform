@@ -24,8 +24,6 @@ ecommerce-platform/
 - REST APIs
 - Maven
 - MySQL (via Docker)
-- Docker & Docker Compose
-- Swagger / OpenAPI
 - Global Exception Handling
 
 ---
