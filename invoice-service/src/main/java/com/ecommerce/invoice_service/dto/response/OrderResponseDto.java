@@ -1,5 +1,6 @@
 package com.ecommerce.invoice_service.dto.response;
 
+import com.ecommerce.invoice_service.enums.InvoiceStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
@@ -16,4 +17,5 @@ public class OrderResponseDto {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime orderedDate;
     private Integer invoiceId;
+    private InvoiceStatus invoiceStatus;
 }

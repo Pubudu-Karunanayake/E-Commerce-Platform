@@ -29,4 +29,8 @@ public class AppControllerAdviser {
         return new ResponseEntity<>(new ErrorResponseDto("An unexpected error occurred: " + ex.getMessage()),
                 HttpStatus.INTERNAL_SERVER_ERROR);
     }
+    @ExceptionHandler(InvoiceAlreadyExistingException.class)
+    public ResponseEntity<ErrorResponseDto> handleInvoiceAlreadyExistingException(InvoiceAlreadyExistingException ex) {
+        return new ResponseEntity<>(new ErrorResponseDto(ex.getMessage()), HttpStatus.CONFLICT);
+    }
 }

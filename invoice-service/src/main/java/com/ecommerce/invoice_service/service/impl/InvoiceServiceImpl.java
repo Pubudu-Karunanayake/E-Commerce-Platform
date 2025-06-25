@@ -4,7 +4,9 @@ import com.ecommerce.invoice_service.dto.request.SetInvoiceIdDto;
 import com.ecommerce.invoice_service.dto.response.InvoiceResponseDto;
 import com.ecommerce.invoice_service.dto.response.OrderResponseDto;
 import com.ecommerce.invoice_service.dto.response.UserResponseDto;
+import com.ecommerce.invoice_service.enums.InvoiceStatus;
 import com.ecommerce.invoice_service.exception.ExternalServiceUnavailableException;
+import com.ecommerce.invoice_service.exception.InvoiceAlreadyExistingException;
 import com.ecommerce.invoice_service.exception.InvoiceNotFoundException;
 import com.ecommerce.invoice_service.exception.OrderNotFoundException;
 import com.ecommerce.invoice_service.model.Invoice;
@@ -27,8 +29,11 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     public InvoiceResponseDto generateInvoice(Integer orderId)
-            throws ExternalServiceUnavailableException,OrderNotFoundException {
+            throws ExternalServiceUnavailableException,OrderNotFoundException,InvoiceAlreadyExistingException {
         OrderResponseDto orderResponseDto = fetchOrderById(orderId);
+        if (orderResponseDto.getInvoiceStatus() == InvoiceStatus.GENERATED){
+            throw new InvoiceAlreadyExistingException("There is an invoice for order id = " + orderId + " already");
+        }
         UserResponseDto userResponseDto = fetchUser(orderResponseDto.getUserId());
         float amount = orderResponseDto.getUnitPrice() * orderResponseDto.getAmount();
         float discount = 0.0f;

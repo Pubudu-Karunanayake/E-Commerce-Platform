@@ -7,6 +7,7 @@ import com.ecommerce.order_service.dto.request.UpdateOrderDto;
 import com.ecommerce.order_service.dto.response.ItemResponseDto;
 import com.ecommerce.order_service.dto.response.OrderResponseDto;
 import com.ecommerce.order_service.dto.response.UserResponseDto;
+import com.ecommerce.order_service.enums.InvoiceStatus;
 import com.ecommerce.order_service.exception.*;
 import com.ecommerce.order_service.model.Order;
 import com.ecommerce.order_service.repository.OrderRepository;
@@ -38,6 +39,7 @@ public class OrderServiceImpl implements OrderService {
         order.setOrderDate(LocalDateTime.now().withNano(0));
         order.setProductName(itemResponseDto.getItemName());
         order.setUnitPrice(itemResponseDto.getUnitPrice());
+        order.setInvoiceStatus(InvoiceStatus.PENDING);
         Order savedOrder =  orderRepository.save(order);
 
         return new OrderResponseDto(
@@ -48,7 +50,9 @@ public class OrderServiceImpl implements OrderService {
                 savedOrder.getUnitPrice(),
                 savedOrder.getAmount(),
                 savedOrder.getOrderDate(),
-                savedOrder.getInvoiceId()
+                savedOrder.getInvoiceId(),
+                savedOrder.getInvoiceStatus()
+
         );
     }
 
@@ -70,7 +74,8 @@ public class OrderServiceImpl implements OrderService {
                     updatedOrder.getUnitPrice(),
                     updatedOrder.getAmount(),
                     updatedOrder.getOrderDate(),
-                    updatedOrder.getInvoiceId()
+                    updatedOrder.getInvoiceId(),
+                    updatedOrder.getInvoiceStatus()
             );
         }
         changeItemAmount(order.getProductId(), order.getAmount());
@@ -86,7 +91,8 @@ public class OrderServiceImpl implements OrderService {
                 updatedOrder.getUnitPrice(),
                 updatedOrder.getAmount(),
                 updatedOrder.getOrderDate(),
-                updatedOrder.getInvoiceId()
+                updatedOrder.getInvoiceId(),
+                updatedOrder.getInvoiceStatus()
         );
     }
 
@@ -112,7 +118,8 @@ public class OrderServiceImpl implements OrderService {
                 order.getUnitPrice(),
                 order.getAmount(),
                 order.getOrderDate(),
-                order.getInvoiceId()
+                order.getInvoiceId(),
+                order.getInvoiceStatus()
         );
     }
 
@@ -129,7 +136,8 @@ public class OrderServiceImpl implements OrderService {
                     order.getUnitPrice(),
                     order.getAmount(),
                     order.getOrderDate(),
-                    order.getInvoiceId()
+                    order.getInvoiceId(),
+                    order.getInvoiceStatus()
             );
             orderResponses.add(orderResponseDto);
         }
@@ -141,6 +149,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findById(setInvoiceIdDto.getOrderId()).orElseThrow(()->
                 new OrderNotFoundException("There is no order with order id = " + setInvoiceIdDto.getOrderId()));
         order.setInvoiceId(setInvoiceIdDto.getInvoiceId());
+        order.setInvoiceStatus(InvoiceStatus.GENERATED);
         orderRepository.save(order);
     }
 

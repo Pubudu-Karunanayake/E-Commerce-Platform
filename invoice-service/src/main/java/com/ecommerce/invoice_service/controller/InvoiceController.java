@@ -1,10 +1,7 @@
 package com.ecommerce.invoice_service.controller;
 
 import com.ecommerce.invoice_service.dto.response.InvoiceResponseDto;
-import com.ecommerce.invoice_service.exception.ExternalServiceUnavailableException;
-import com.ecommerce.invoice_service.exception.InvoiceNotFoundException;
-import com.ecommerce.invoice_service.exception.OrderNotFoundException;
-import com.ecommerce.invoice_service.exception.UserNotFoundException;
+import com.ecommerce.invoice_service.exception.*;
 import com.ecommerce.invoice_service.service.InvoiceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,7 +19,7 @@ public class InvoiceController {
 
     @PostMapping("/invoices/{orderId}")
     public ResponseEntity<InvoiceResponseDto> generateInvoice(@PathVariable Integer orderId)
-            throws ExternalServiceUnavailableException, OrderNotFoundException, UserNotFoundException {
+            throws ExternalServiceUnavailableException, OrderNotFoundException, UserNotFoundException, InvoiceAlreadyExistingException {
         InvoiceResponseDto invoiceResponseDto = invoiceService.generateInvoice(orderId);
         URI location = URI.create("api/invoices/" + invoiceResponseDto.getInvoiceId());
         return ResponseEntity.created(location).body(invoiceResponseDto);

@@ -1,5 +1,6 @@
 package com.ecommerce.order_service.model;
 
+import com.ecommerce.order_service.enums.InvoiceStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -34,4 +35,8 @@ public class Order {
 
     @Column(name = "invoice_Id")
     private Integer invoiceId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "invoice_status")
+    private InvoiceStatus invoiceStatus;
 }
