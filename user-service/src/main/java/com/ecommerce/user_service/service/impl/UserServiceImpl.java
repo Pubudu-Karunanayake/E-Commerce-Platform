@@ -8,6 +8,7 @@ import com.ecommerce.user_service.model.User;
 import com.ecommerce.user_service.repository.UserRepository;
 import com.ecommerce.user_service.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -27,6 +29,7 @@ public class UserServiceImpl implements UserService {
         user.setAddress(createUserDto.getAddress());
         user.setMobileNumber(createUserDto.getPhone());
         User savedUser = userRepository.save(user);
+        log.info("Created user with id : {}", savedUser.getId());
 
         return new UserResponseDto(
                 savedUser.getId(),
@@ -39,8 +42,10 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     public UserResponseDto updateUser(Integer id, UpdateUserDto updateUserDto) throws UserNotFoundException{
-        User user = userRepository.findById(id).orElseThrow(()->
-                new UserNotFoundException("There is no user for id = " + id));
+        User user = userRepository.findById(id).orElseThrow(()->{
+            log.error("Failed to update user.User not found with id : {}", id);
+            return new UserNotFoundException("There is no user for id = " + id);
+        });
         if (updateUserDto.getName() != null) {
             user.setName(updateUserDto.getName());
         }
@@ -54,6 +59,7 @@ public class UserServiceImpl implements UserService {
             user.setMobileNumber(updateUserDto.getPhone());
         }
         User savedUser = userRepository.save(user);
+        log.info("Updated user with id : {}", savedUser.getId());
         return new UserResponseDto(
                 savedUser.getId(),
                 savedUser.getName(),
@@ -65,8 +71,11 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     public UserResponseDto getUserById(Integer id) throws UserNotFoundException{
-        User user = userRepository.findById(id).orElseThrow(()->
-                new UserNotFoundException("There is no user for id = " + id));
+        User user = userRepository.findById(id).orElseThrow(()->{
+            log.error("Failed to fetch user.User not found with id : {}", id);
+            return new UserNotFoundException("There is no user for id = " + id);
+        });
+        log.info("Fetched user with id : {}", user.getId());
         return new UserResponseDto(
                 user.getId(),
                 user.getName(),
@@ -80,12 +89,15 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(Integer id) throws UserNotFoundException {
         Optional<User> user = userRepository.findById(id);
         if (!user.isPresent()) {
+            log.error("Failed to delete user.User not found with id : {}", id);
             throw new UserNotFoundException("There is no user already for id = " + id );
         }
         userRepository.deleteById(id);
+        log.info("Deleted user with id : {}", id);
     }
     @Override
     public List<UserResponseDto> getAllUsers() {
+        log.info("Getting all users");
         return userRepository.findAll()
                 .stream()
                 .map(user -> new UserResponseDto(
@@ -101,16 +113,22 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void addLoyaltyPoints(Integer id) throws UserNotFoundException{
-        User user = userRepository.findById(id).orElseThrow(()->
-                new UserNotFoundException("There is no existing user for id = " + id));
+        User user = userRepository.findById(id).orElseThrow(()->{
+            log.error("Failed to add loyalty points. User not found with id : {}", id);
+            return new UserNotFoundException("There is no existing user for id = " + id);
+        });
         user.setLoyaltyPoints(user.getLoyaltyPoints() + 1);
         userRepository.save(user);
+        log.info("Added loyalty points for user with id : {}", id);
     }
     @Override
     public void deductLoyaltyPoints(Integer id) throws UserNotFoundException{
-        User user = userRepository.findById(id).orElseThrow(()->
-                new UserNotFoundException("There is no existing user for id = " + id));
+        User user = userRepository.findById(id).orElseThrow(()->{
+            log.error("Failed to deduct loyalty points. User not found with id : {}", id);
+            return new UserNotFoundException("There is no existing user for id = " + id);
+        });
         user.setLoyaltyPoints(user.getLoyaltyPoints() - 1);
         userRepository.save(user);
+        log.info("Deducted loyalty points for user with id : {}", id);
     }
 }
