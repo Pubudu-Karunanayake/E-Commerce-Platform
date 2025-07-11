@@ -56,7 +56,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         invoice.setDiscount(discount);
         invoice.setTotal(totalAmount);
         Invoice savedInvoice = invoiceRepository.save(invoice);
-        setInvoiceId(savedInvoice.getOrderId(), savedInvoice.getInvoiceId());
+        setInvoiceId(savedInvoice.getOrderId(), savedInvoice.getInvoiceId(), InvoiceStatus.GENERATED);
         return new InvoiceResponseDto(
                 savedInvoice.getInvoiceId(),
                 savedInvoice.getOrderId(),
@@ -76,7 +76,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     public void deleteInvoice(Integer invoiceId) throws InvoiceNotFoundException, OrderNotFoundException,ExternalServiceUnavailableException {
         Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(() ->
                 new InvoiceNotFoundException("There is no invoice with invoice id  = "+ invoiceId));
-        setInvoiceId(invoice.getOrderId(), null);
+        setInvoiceId(invoice.getOrderId(), null, InvoiceStatus.PENDING);
         invoiceRepository.delete(invoice);
     }
 
@@ -142,11 +142,12 @@ public class InvoiceServiceImpl implements InvoiceService {
             throw new ExternalServiceUnavailableException("User service is currently unavailable");
         }
     }
-    private void setInvoiceId(Integer orderId, Integer invoiceId) throws OrderNotFoundException,ExternalServiceUnavailableException {
+    private void setInvoiceId(Integer orderId, Integer invoiceId, InvoiceStatus invoiceStatus) throws OrderNotFoundException,ExternalServiceUnavailableException {
         String orderServiceUrl = "http://localhost:8082/api/orders/set-invoices";
         SetInvoiceIdDto setInvoiceIdDto = new SetInvoiceIdDto();
         setInvoiceIdDto.setOrderId(orderId);
         setInvoiceIdDto.setInvoiceId(invoiceId);
+        setInvoiceIdDto.setInvoiceStatus(invoiceStatus);
         try{
             restTemplate.postForObject(orderServiceUrl, setInvoiceIdDto, void.class);
         }catch (HttpClientErrorException.NotFound ex) {

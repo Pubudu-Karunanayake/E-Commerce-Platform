@@ -149,7 +149,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findById(setInvoiceIdDto.getOrderId()).orElseThrow(()->
                 new OrderNotFoundException("There is no order with order id = " + setInvoiceIdDto.getOrderId()));
         order.setInvoiceId(setInvoiceIdDto.getInvoiceId());
-        order.setInvoiceStatus(InvoiceStatus.GENERATED);
+        order.setInvoiceStatus(setInvoiceIdDto.getInvoiceStatus());
         orderRepository.save(order);
     }
 
