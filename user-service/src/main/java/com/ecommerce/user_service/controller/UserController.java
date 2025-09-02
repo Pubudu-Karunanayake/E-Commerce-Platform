@@ -24,7 +24,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/users")
-    public ResponseEntity<UserResponseDto> saveUser(@Valid @RequestBody CreateUserDto createUserDto) {
+    public ResponseEntity<UserResponseDto> createUser(@Valid @RequestBody CreateUserDto createUserDto) {
         log.info("Post /api/users - Creating user with email : {}", createUserDto.getEmail());
         UserResponseDto userResponseDto = userService.createUser(createUserDto);
         URI location = URI.create("/api/users/" + userResponseDto.getId());
