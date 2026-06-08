@@ -4,12 +4,10 @@ import com.ecommerce.product_service.dto.category.CategoryResponseDto;
 import com.ecommerce.product_service.dto.category.CreateCategoryDto;
 import com.ecommerce.product_service.exception.CategoryNotFoundException;
 import com.ecommerce.product_service.model.Category;
-import com.ecommerce.product_service.model.Item;
 import com.ecommerce.product_service.repository.CategoryRepository;
 import com.ecommerce.product_service.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +26,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public void deleteCategory(Integer id) throws CategoryNotFoundException {
+    public void deleteCategory(String id) throws CategoryNotFoundException {
         Category category = categoryRepository.findById(id).orElseThrow(()->
                 new CategoryNotFoundException("There is no category already for id = " + id));
         categoryRepository.delete(category);

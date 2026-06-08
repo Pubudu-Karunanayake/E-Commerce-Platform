@@ -18,6 +18,6 @@ public class CreateItemDto {
     @Positive(message = "Invalid price!")
     private Float price;
 
-    @NotNull(message = "Category Id is required!")
-    private Integer categoryId;
+    @NotBlank(message = "Category Id is required!")
+    private String categoryId;
 }

@@ -14,7 +14,6 @@ import com.ecommerce.product_service.repository.ItemRepository;
 import com.ecommerce.product_service.service.ItemService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +23,7 @@ import java.util.List;
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final CategoryRepository categoryRepository;
+
     @Override
     public ItemResponseDto CreateNewItem(CreateItemDto createItemDto) throws CategoryNotFoundException{
         Category category = categoryRepository.findById(createItemDto.getCategoryId()).orElseThrow(()->
@@ -32,33 +32,36 @@ public class ItemServiceImpl implements ItemService {
         item.setItemName(createItemDto.getName());
         item.setQuantity(createItemDto.getQuantity());
         item.setUnitPrice(createItemDto.getPrice());
-        item.setCategory(category);
+        item.setCategoryId(category.getId());
         Item savedItem = itemRepository.save(item);
         return new ItemResponseDto(
                 savedItem.getId(),
                 savedItem.getItemName(),
                 savedItem.getQuantity(),
                 savedItem.getUnitPrice(),
-                savedItem.getCategory().getName()
+                category.getName()
         );
     }
 
     @Override
-    public void deleteItemById(Integer id) throws ItemNotFoundException {
+    public void deleteItemById(String id) throws ItemNotFoundException {
         Item item = itemRepository.findById(id).orElseThrow(()->
                 new ItemNotFoundException("There is no item with id = " + id));
         itemRepository.delete(item);
     }
 
     @Override
-    public ItemResponseDto getItemById(Integer id) throws ItemNotFoundException {
+    public ItemResponseDto getItemById(String id) throws ItemNotFoundException {
         Item item = itemRepository.findById(id).orElseThrow(()-> new ItemNotFoundException("There is no item with id = " + id));
+        String categoryName = categoryRepository.findById(item.getCategoryId())
+                .map(Category::getName)
+                .orElse("Unknown");
         return new ItemResponseDto(
                 item.getId(),
                 item.getItemName(),
                 item.getQuantity(),
                 item.getUnitPrice(),
-                item.getCategory().getName()
+                categoryName
         );
     }
 
@@ -68,12 +71,15 @@ public class ItemServiceImpl implements ItemService {
 //            List<ItemResponseDto> itemResponse = new ArrayList<>();
 //
 //            for (Item item : items) {
+//                String categoryName = categoryRepository.findById(item.getCategoryId())
+//                        .map(Category::getName)
+//                        .orElse("Unknown");
 //                ItemResponseDto itemResponseDto = new ItemResponseDto(
 //                        item.getId(),
 //                        item.getItemName(),
 //                        item.getQuantity(),
 //                        item.getUnitPrice(),
-//                        item.getCategory().getName()
+//                        categoryName
 //                );
 //                itemResponse.add(itemResponseDto);
 //            }
@@ -82,15 +88,21 @@ public class ItemServiceImpl implements ItemService {
 //    }
 
     @Override
-    public ItemResponseDto updateItemById(Integer id, UpdateItemDto updateItemDto)
+    public ItemResponseDto updateItemById(String id, UpdateItemDto updateItemDto)
             throws ItemNotFoundException , CategoryNotFoundException{
         Item item = itemRepository.findById(id).orElseThrow(()->
                 new ItemNotFoundException("There is no item with id = " + id));
 
+        String categoryName;
         if (updateItemDto.getCategoryId() != null) {
             Category category = categoryRepository.findById(updateItemDto.getCategoryId()).orElseThrow(()->
-                    new CategoryNotFoundException("There is no category with id = " + id));
-            item.setCategory(category);
+                    new CategoryNotFoundException("There is no category with id = " + updateItemDto.getCategoryId()));
+            item.setCategoryId(category.getId());
+            categoryName = category.getName();
+        } else {
+            categoryName = categoryRepository.findById(item.getCategoryId())
+                    .map(Category::getName)
+                    .orElse("Unknown");
         }
         if (updateItemDto.getName() != null) {
             item.setItemName(updateItemDto.getName());
@@ -106,17 +118,17 @@ public class ItemServiceImpl implements ItemService {
         return new ItemResponseDto(
                 savedItem.getId(),
                 savedItem.getItemName(),
-                item.getQuantity(),
-                item.getUnitPrice(),
-                item.getCategory().getName()
+                savedItem.getQuantity(),
+                savedItem.getUnitPrice(),
+                categoryName
         );
     }
 
     @Override
-    public List<ItemResponseDto> getItemsByCategoryId(Integer categoryId) throws CategoryNotFoundException{
+    public List<ItemResponseDto> getItemsByCategoryId(String categoryId) throws CategoryNotFoundException{
         Category category = categoryRepository.findById(categoryId).orElseThrow(()->
                 new CategoryNotFoundException("There is no category with id = " + categoryId));
-        List<Item> items = category.getItems();
+        List<Item> items = itemRepository.findByCategoryId(categoryId);
         List<ItemResponseDto> itemResponse = new ArrayList<>();
         for (Item item : items) {
             ItemResponseDto itemResponseDto = new ItemResponseDto(
@@ -124,7 +136,7 @@ public class ItemServiceImpl implements ItemService {
                     item.getItemName(),
                     item.getQuantity(),
                     item.getUnitPrice(),
-                    item.getCategory().getName()
+                    category.getName()
             );
             itemResponse.add(itemResponseDto);
         }
@@ -132,7 +144,6 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    @Transactional(rollbackFor = {ItemNotFoundException.class, InsufficientAmountException.class})
     public void changeItemAmount (ChangeItemAmountDto changeItemAmountDto) throws ItemNotFoundException, InsufficientAmountException {
         Item item = itemRepository.findById(changeItemAmountDto.getItemId()).orElseThrow(()->
                 new ItemNotFoundException("There is no item with id = " + changeItemAmountDto.getItemId()));

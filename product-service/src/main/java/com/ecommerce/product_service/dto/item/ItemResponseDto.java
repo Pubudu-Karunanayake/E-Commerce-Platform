@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class ItemResponseDto {
-    private Integer id;
+    private String id;
     private String itemName;
     private Integer quantity;
     private Float unitPrice;

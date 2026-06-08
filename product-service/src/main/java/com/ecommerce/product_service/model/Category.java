@@ -1,24 +1,14 @@
 package com.ecommerce.product_service.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.persistence.*;
 import lombok.Data;
-
-import java.util.List;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
-@Entity
-@Table(name = "categories")
+@Document(collection = "categories")
 public class Category {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "category_id")
-    private Integer id;
+    private String id;
 
-    @Column(name = "category_name")
     private String name;
-
-    @OneToMany(mappedBy = "category" , cascade = CascadeType.ALL)
-    @JsonManagedReference
-    private List<Item> items;
 }

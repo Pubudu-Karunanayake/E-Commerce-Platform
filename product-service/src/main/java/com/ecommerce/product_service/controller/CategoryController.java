@@ -3,7 +3,6 @@ package com.ecommerce.product_service.controller;
 import com.ecommerce.product_service.dto.category.CategoryResponseDto;
 import com.ecommerce.product_service.dto.category.CreateCategoryDto;
 import com.ecommerce.product_service.exception.CategoryNotFoundException;
-import com.ecommerce.product_service.model.Category;
 import com.ecommerce.product_service.service.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +28,7 @@ public class CategoryController {
 
     @DeleteMapping("/categories/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteCategory(@PathVariable Integer id) throws CategoryNotFoundException {
+    public void deleteCategory(@PathVariable String id) throws CategoryNotFoundException {
         categoryService.deleteCategory(id);
     }
 

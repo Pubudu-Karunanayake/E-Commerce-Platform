@@ -13,5 +13,5 @@ public class UpdateItemDto {
     @Positive(message = "Invalid price!")
     private Float price;
 
-    private Integer categoryId;
+    private String categoryId;
 }

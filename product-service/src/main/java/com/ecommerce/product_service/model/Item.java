@@ -1,30 +1,20 @@
 package com.ecommerce.product_service.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.persistence.*;
 import lombok.Data;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity
-@Table(name = "items")
 @Data
+@Document(collection = "items")
 public class Item {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "item_id")
-    private Integer id;
+    private String id;
 
-    @Column(name = "item_name")
     private String itemName;
 
-    @Column(name = "quantity")
     private Integer quantity;
 
-    @Column(name = "unit_price")
     private Float unitPrice;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    @JsonBackReference
-    private Category category;
-
+    private String categoryId;
 }

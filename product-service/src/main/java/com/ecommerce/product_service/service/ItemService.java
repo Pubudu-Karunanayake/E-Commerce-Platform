@@ -12,11 +12,11 @@ import java.util.List;
 
 public interface ItemService {
     ItemResponseDto CreateNewItem(CreateItemDto createItemDto) throws CategoryNotFoundException;
-    void deleteItemById(Integer id) throws ItemNotFoundException;
-    ItemResponseDto getItemById(Integer id) throws ItemNotFoundException;
+    void deleteItemById(String id) throws ItemNotFoundException;
+    ItemResponseDto getItemById(String id) throws ItemNotFoundException;
     //List<ItemResponseDto> getAllItems();
-    ItemResponseDto updateItemById(Integer id, UpdateItemDto updateItemDto)
+    ItemResponseDto updateItemById(String id, UpdateItemDto updateItemDto)
             throws ItemNotFoundException, CategoryNotFoundException;
-    List<ItemResponseDto> getItemsByCategoryId(Integer categoryId) throws CategoryNotFoundException;
+    List<ItemResponseDto> getItemsByCategoryId(String categoryId) throws CategoryNotFoundException;
     void changeItemAmount(ChangeItemAmountDto changeItemAmountDto) throws ItemNotFoundException, InsufficientAmountException;
 }

@@ -33,12 +33,12 @@ public class ItemController {
 
     @DeleteMapping("/items/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteItem (@PathVariable Integer id) throws ItemNotFoundException {
+    public void deleteItem (@PathVariable String id) throws ItemNotFoundException {
         itemService.deleteItemById(id);
     }
 
     @GetMapping("/items/{id}")
-    public ResponseEntity<ItemResponseDto> getItem (@PathVariable Integer id) throws ItemNotFoundException {
+    public ResponseEntity<ItemResponseDto> getItem (@PathVariable String id) throws ItemNotFoundException {
         ItemResponseDto itemResponseDto = itemService.getItemById(id);
         return ResponseEntity.ok(itemResponseDto);
     }
@@ -51,7 +51,7 @@ public class ItemController {
 
     @PatchMapping("/items/{id}")
     public ResponseEntity<ItemResponseDto> updateItem
-            (@PathVariable Integer id, @Valid @RequestBody UpdateItemDto updateItemDto)
+            (@PathVariable String id, @Valid @RequestBody UpdateItemDto updateItemDto)
             throws ItemNotFoundException, CategoryNotFoundException{
         ItemResponseDto itemResponseDto = itemService.updateItemById(id, updateItemDto);
         return ResponseEntity.ok(itemResponseDto);
@@ -59,7 +59,7 @@ public class ItemController {
 
     @GetMapping("/categories/{categoryId}/items")
     public ResponseEntity<List<ItemResponseDto>> getItemsByCategory
-            (@PathVariable Integer categoryId) throws CategoryNotFoundException {
+            (@PathVariable String categoryId) throws CategoryNotFoundException {
         List<ItemResponseDto> itemResponseDtoList = itemService.getItemsByCategoryId(categoryId);
         return ResponseEntity.ok(itemResponseDtoList);
     }
