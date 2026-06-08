@@ -24,6 +24,8 @@ ecommerce-platform/
 - REST APIs
 - Maven
 - MySQL (via Docker)
+- MariaDB (via Docker)
+- MongoDB (via Docker)
 - Global Exception Handling
 
 ---
